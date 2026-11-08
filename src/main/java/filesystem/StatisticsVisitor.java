@@ -1,0 +1,50 @@
+package filesystem;
+
+public class StatisticsVisitor implements Visitor {
+
+    private int fileCount;
+    private int directoryCount;
+    private int maxDepth;
+    private int currentDepth;
+
+    public void collect(Element root) {
+        fileCount = 0;
+        directoryCount = 0;
+        maxDepth = 0;
+        currentDepth = 0;
+        root.accept(this);
+    }
+
+    public int getFileCount() {
+        return fileCount;
+    }
+
+    public int getDirectoryCount() {
+        return directoryCount;
+    }
+
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    @Override
+    public void visit(FileNode file) {
+        fileCount++;
+        updateMaxDepth();
+    }
+
+    @Override
+    public void visit(DirectoryNode directory) {
+        directoryCount++;
+        updateMaxDepth();
+        currentDepth++;
+        for (Node child : directory.getChildren()) {
+            child.accept(this);
+        }
+        currentDepth--;
+    }
+
+    private void updateMaxDepth() {
+        maxDepth = Math.max(maxDepth, currentDepth);
+    }
+}
